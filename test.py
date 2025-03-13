@@ -11,7 +11,7 @@ watermark_text = 'Your Watermark Text Here'  # Replace with your text
 # Download the video
 def download_video(url):
     ydl_opts = {
-        'format': 'worst',  # Download the best available quality
+        'format': 'worst',  # Download the lowest available quality
         'outtmpl': 'downloaded_video.%(ext)s',  # Output filename template
     }
     
@@ -29,19 +29,16 @@ def add_text_watermark(input_video, text, output_video):
         output_video      # Output file name
     ]
     
-    subprocess.run(command)
+    result = subprocess.run(command, stderr=subprocess.PIPE)
+    print(result.stderr.decode())  # Print any FFmpeg errors
 
-# Main function to execute the process
-def main():
-    downloaded_video = download_video(video_url)
-    print(f"Downloaded video: {downloaded_video}")
-    
-    output_video = 'video_with_text_watermark.mp4'
-    add_text_watermark(downloaded_video, watermark_text, output_video)
-    print(f"Watermarked video saved as: {output_video}")
-    
-    # Optionally, clean up the original downloaded video
-    os.remove(downloaded_video)
+# Execute the process
+downloaded_video = download_video(video_url)
+print(f"Downloaded video: {downloaded_video}")
 
-if __name__ == "__main__":
-    main()
+output_video = 'video_with_text_watermark.mp4'
+add_text_watermark(downloaded_video, watermark_text, output_video)
+print(f"Watermarked video saved as: {output_video}")
+
+# Optionally, clean up the original downloaded video
+os.remove(downloaded_video)

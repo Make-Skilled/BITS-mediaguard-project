@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+      }
+      .fade-in {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeIn 0.5s ease-out forwards;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-gray-900 text-white">
+    <!-- Navbar -->
+    <nav class="flex justify-between items-center p-4 bg-gray-800 fixed top-0 left-0 right-0 w-full">
+      <span class="text-xl font-bold">MediaGuard</span>
+      <!-- Moved back button to the right side -->
+      <button onclick="window.history.back();" class="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600 transition">Back</button>
+    </nav>
+
+    <!-- Video Section -->
+    <section class="bg-gray-900 text-white p-6 pt-20 fade-in">
+      <div class="max-w-5xl mx-auto bg-gray-800 p-6 rounded-lg shadow-lg">
+        <div class="relative w-full h-0" style="padding-bottom: 56.25%"> <!-- 16:9 Aspect Ratio -->
+          <iframe
+            class="absolute top-0 left-0 w-full h-full rounded-lg shadow-md"
+            src="{{ video }}"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          ></iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-center p-4">
+      <button onclick="window.history.back();" class="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600 transition">
+        Back
+      </button>
+    </footer>
+  </body>
+</html>

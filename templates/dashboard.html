@@ -3,132 +3,122 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>OTT Platform</title>
+    <title>MediaGuard - Secure OTT Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css"
-    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
   </head>
   <body class="bg-gray-900 text-white">
     <!-- Navbar -->
-    <nav
-      class="flex justify-between items-center p-4 bg-gray-800 fixed w-full z-10"
-    >
-      <h1 class="text-2xl font-bold">MediaGuard</h1>
-      <div class="flex space-x-4">
-        <input
-          type="text"
-          placeholder="Search..."
-          class="p-2 rounded bg-gray-700 text-white"
-        />
+    <nav class="flex justify-between items-center p-4 bg-gray-800 fixed w-full z-10">
+      <h1 class="text-2xl font-bold text-red-500">MediaGuard</h1>
+      <div class="flex space-x-4 items-center">
+        <input type="text" placeholder="Search..." class="p-2 rounded bg-gray-700 text-white" />
+        <p class="hidden md:block text-sm">Welcome, <span class="font-bold">User</span></p>
         <a href="/logout">
-          <button class="px-4 py-2 bg-red-600 rounded hover:bg-red-700">
-            Logout
-          </button></a
-        >
+          <button class="px-4 py-2 bg-red-600 rounded">Logout</button>
+        </a>
       </div>
     </nav>
-    {% with messages = get_flashed_messages(with_categories=true) %} {% if
-        messages %}
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %} 
+      {% if messages %}
         <div class="fixed top-4 right-4 space-y-2 z-50">
           {% for category, message in messages %}
-          <div
-            class="px-4 py-2 rounded-lg text-white shadow-lg {% if category == 'success' %} bg-green-600 {% elif category == 'danger' %} bg-red-600 {% elif category == 'warning' %} bg-yellow-600 {% elif category == 'info' %} bg-blue-600 {% endif %}"
-          >
+          <div class="px-4 py-2 rounded-lg text-white shadow-lg {% if category == 'success' %} bg-green-500 {% elif category == 'danger' %} bg-red-500 {% endif %}">
             {{ message }}
           </div>
           {% endfor %}
         </div>
-        {% endif %} {% endwith %}
+      {% endif %}
+    {% endwith %}
 
     <!-- Hero Section -->
-    <header
-      class="relative h-[500px] flex items-center justify-center bg-cover bg-center"
-      style="
-        background-image: url('https://source.unsplash.com/1600x900/?movie,cinema');
-      "
-    >
-      <div class="bg-black bg-opacity-50 p-6 rounded-lg" data-aos="fade-up">
-        <h2 class="text-4xl font-bold">Watch the Best Movies & Shows</h2>
-        <button class="mt-4 px-6 py-2 bg-red-600 rounded hover:bg-red-700">
-          Start Watching
-        </button>
-      </div>
-    </header>
+    <section class="p-6 text-center">
+      <h2 class="text-3xl font-bold">Watch the Best Movies & Shows</h2>
+      <p class="text-gray-300 mt-2">Discover, stream, and enjoy premium content securely.</p>
+    </section>
 
-    <!-- Categories Section -->
+    <!-- Trending Section -->
     <section class="p-6">
-      <h2 class="text-2xl font-bold mb-4">Popular Movies</h2>
+      <h2 class="text-2xl font-bold mb-4">🔥 Trending Now</h2>
       <div class="flex space-x-4 overflow-x-auto">
-        <div class="w-48 h-64 bg-gray-700 rounded-lg" data-aos="zoom-in"></div>
-        <div class="w-48 h-64 bg-gray-700 rounded-lg" data-aos="zoom-in"></div>
-        <div class="w-48 h-64 bg-gray-700 rounded-lg" data-aos="zoom-in"></div>
+        {% for video in videos[:5] %}
+        <div class="w-48 h-64 bg-gray-700 rounded-lg relative group">
+          <a href="/view?id={{video._id}}">
+            <img src="{{ video.thumbnail }}" alt="{{ video.title }}" class="w-full h-full object-cover rounded-lg" />
+            <div class="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition">
+              <p class="text-white font-bold">{{ video.title }}</p>
+              <button class="mt-2 px-4 py-2 bg-red-500 rounded">▶ Play</button>
+            </div>
+          </a>
+        </div>
+        {% endfor %}
       </div>
     </section>
 
-    <!-- Additional Categories -->
+    <!-- Genre Filters -->
     <section class="p-6">
-      <h2 class="text-2xl font-bold mb-4">Entertainment</h2>
-      <div class="flex space-x-4 overflow-x-auto">
-        <div class="w-48 h-64 bg-gray-700 rounded-lg" data-aos="zoom-in"></div>
-        <div class="w-48 h-64 bg-gray-700 rounded-lg" data-aos="zoom-in"></div>
-        <div class="w-48 h-64 bg-gray-700 rounded-lg" data-aos="zoom-in"></div>
+      <h2 class="text-2xl font-bold mb-4">🎭 Browse by Genre</h2>
+      <div class="flex space-x-4">
+        <button class="genre-filter px-4 py-2 bg-blue-600 rounded" data-genre="All">All</button>
+        <button class="genre-filter px-4 py-2 bg-green-600 rounded" data-genre="Action">Action</button>
+        <button class="genre-filter px-4 py-2 bg-yellow-600 rounded" data-genre="Comedy">Comedy</button>
+        <button class="genre-filter px-4 py-2 bg-purple-600 rounded" data-genre="Horror">Horror</button>
+        <button class="genre-filter px-4 py-2 bg-pink-600 rounded" data-genre="Entertainment">Entertainment</button>
       </div>
     </section>
 
-    <section class="p-6">
-      <h2 class="text-2xl font-bold mb-4">Horror</h2>
-      <div class="flex space-x-4 overflow-x-auto">
-        <div class="w-48 h-64 bg-gray-700 rounded-lg" data-aos="zoom-in"></div>
-        <div class="w-48 h-64 bg-gray-700 rounded-lg" data-aos="zoom-in"></div>
-        <div class="w-48 h-64 bg-gray-700 rounded-lg" data-aos="zoom-in"></div>
+    <!-- Video Sections -->
+    {% for category in ["Latest Movies", "Entertainment", "Horror", "Comedy", "Action"] %}
+    <section class="p-6 video-section" data-genre="{{ category }}">
+      <h2 class="text-2xl font-bold mb-4">{{ category }}</h2>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {% for video in videos if video.category == category %}
+        <div class="w-full h-64 bg-gray-700 rounded-lg relative group">
+          <a href="/view?id={{video._id}}">
+            <img src="{{ video.thumbnail }}" alt="{{ video.title }}" class="w-full h-full object-cover rounded-lg" />
+            <div class="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition">
+              <p class="text-white font-bold">{{ video.title }}</p>
+              <button class="mt-2 px-4 py-2 bg-red-600 text-white rounded">🎬 Watch</button>
+            </div>
+          </a>
+        </div>
+        {% else %}
+        <p class="text-gray-400 col-span-full text-center">No videos available in this category.</p>
+        {% endfor %}
       </div>
     </section>
-
-    <section class="p-6">
-      <h2 class="text-2xl font-bold mb-4">Comedy</h2>
-      <div class="flex space-x-4 overflow-x-auto">
-        <div class="w-48 h-64 bg-gray-700 rounded-lg" data-aos="zoom-in"></div>
-        <div class="w-48 h-64 bg-gray-700 rounded-lg" data-aos="zoom-in"></div>
-        <div class="w-48 h-64 bg-gray-700 rounded-lg" data-aos="zoom-in"></div>
-      </div>
-    </section>
+    {% endfor %}
 
     <!-- Footer -->
     <footer class="bg-gray-800 text-center p-4 mt-6">
-      <p>&copy; 2025 MediaGuard. All rights reserved.</p>
-    </footer>
-
-    <!-- Login Page -->
-    <div
-      class="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-70 hidden"
-      id="loginModal"
-    >
-      <div class="bg-gray-800 p-8 rounded-lg w-96" data-aos="fade-up">
-        <h2 class="text-2xl font-bold mb-4">Login to MediaGuard</h2>
-        <input
-          type="email"
-          placeholder="Email"
-          class="w-full p-2 mb-4 bg-gray-700 rounded"
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          class="w-full p-2 mb-4 bg-gray-700 rounded"
-        />
-        <button class="w-full p-2 bg-red-600 rounded hover:bg-red-700">
-          Login
-        </button>
-        <p class="mt-4 text-sm">
-          Don't have an account? <a href="#" class="text-red-500">Sign up</a>
-        </p>
+      <p class="text-white">© 2025 MediaGuard | Protecting Content, Empowering Creators</p>
+      <div class="flex justify-center space-x-4 mt-2">
+        <a href="#" class="text-blue-400 hover:underline">Privacy Policy</a>
+        <a href="#" class="text-blue-400 hover:underline">Terms of Service</a>
+        <a href="/contact" class="text-blue-400 hover:underline">Contact</a>
       </div>
-    </div>
+    </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
     <script>
       AOS.init();
+
+      // Genre Filter Logic
+      const genreButtons = document.querySelectorAll(".genre-filter");
+      genreButtons.forEach((button) => {
+        button.addEventListener("click", function () {
+          const genre = this.getAttribute("data-genre");
+          document.querySelectorAll(".video-section").forEach((section) => {
+            if (genre === "All" || section.dataset.genre === genre) {
+              section.classList.remove("hidden");
+            } else {
+              section.classList.add("hidden");
+            }
+          });
+        });
+      });
     </script>
   </body>
 </html>

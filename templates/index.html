@@ -3,120 +3,69 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>OTT Platform</title>
+    <title>MediaGuard - Secure Your Content</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css"
-    />
   </head>
   <body class="bg-gray-900 text-white">
     <!-- Navbar -->
-    <nav
-      class="flex justify-between items-center p-4 bg-gray-800 fixed w-full z-10"
-    >
-      <h1 class="text-2xl font-bold">MediaGuard</h1>
-      <div class="flex space-x-4">
-        <input
-          type="text"
-          placeholder="Search..."
-          class="p-2 rounded bg-gray-700 text-white"
-        />
-        <a href="/login">
-          <button class="px-4 py-2 bg-red-600 rounded hover:bg-red-700">
-            Login
-          </button></a
-        >
+    <nav class="flex justify-between items-center p-4 bg-gray-800 fixed top-0 left-0 w-full z-10 shadow-md">
+      <h1 class="text-3xl font-bold text-red-500">MediaGuard</h1>
+      <div>
+        <a href="/login" class="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700 transition duration-300">Login</a>
+        <a href="/register" class="px-4 py-2 bg-green-600 ml-2 rounded hover:bg-green-700 transition">Get Started</a>
       </div>
     </nav>
 
     <!-- Hero Section -->
-    <header
-      class="relative h-[500px] flex items-center justify-center bg-cover bg-center"
-      style="
-        background-image: url('https://source.unsplash.com/1600x900/?movie,cinema');
-      "
-    >
-      <div class="bg-black bg-opacity-50 p-6 rounded-lg" data-aos="fade-up">
-        <h2 class="text-4xl font-bold">Watch the Best Movies & Shows</h2>
-        <button class="mt-4 px-6 py-2 bg-red-600 rounded hover:bg-red-700">
-          Start Watching
-        </button>
-      </div>
-    </header>
-
-    <!-- Categories Section -->
-    <section class="p-6">
-      <h2 class="text-2xl font-bold mb-4">Popular Movies</h2>
-      <div class="flex space-x-4 overflow-x-auto">
-        <div class="w-48 h-64 bg-gray-700 rounded-lg" data-aos="zoom-in"></div>
-        <div class="w-48 h-64 bg-gray-700 rounded-lg" data-aos="zoom-in"></div>
-        <div class="w-48 h-64 bg-gray-700 rounded-lg" data-aos="zoom-in"></div>
+    <section class="text-center py-20 bg-black text-white">
+      <div class="max-w-5xl mx-auto">
+        <h1 class="text-5xl font-bold leading-tight">Secure Your Digital Content with <span class="text-red-500">MediaGuard</span></h1>
+        <p class="mt-4 text-lg text-gray-300">
+          The ultimate **OTT platform** to **stream, protect, and monetize** your videos while preventing piracy.
+        </p>
+        <div class="mt-6 flex justify-center space-x-6">
+          <a href="/signup" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-lg">Start Free Trial</a>
+          <a href="/features" class="px-6 py-3 border border-white rounded hover:bg-white hover:text-gray-900 transition">Learn More</a>
+        </div>
       </div>
     </section>
 
-    <!-- Additional Categories -->
-    <section class="p-6">
-      <h2 class="text-2xl font-bold mb-4">Entertainment</h2>
-      <div class="flex space-x-4 overflow-x-auto">
-        <div class="w-48 h-64 bg-gray-700 rounded-lg" data-aos="zoom-in"></div>
-        <div class="w-48 h-64 bg-gray-700 rounded-lg" data-aos="zoom-in"></div>
-        <div class="w-48 h-64 bg-gray-700 rounded-lg" data-aos="zoom-in"></div>
+    <!-- Features Section -->
+    <section class="py-16">
+      <div class="max-w-6xl mx-auto text-center">
+        <h2 class="text-4xl font-bold text-white">Why Choose <span class="text-red-500">MediaGuard?</span></h2>
+        <p class="mt-4 text-gray-300">
+          Secure your content, grow your audience, and stream with confidence.
+        </p>
+        <div class="mt-10 grid grid-cols-1 md:grid-cols-3 gap-8">
+          <!-- Feature 1 -->
+          <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+            <h3 class="text-xl font-semibold text-red-400">🛡️ Advanced Security</h3>
+            <p>Industry-leading encryption and real-time piracy protection to keep your content safe.</p>
+          </div>
+          <!-- Feature 2 -->
+          <div class="bg-gray-800 p-6 rounded-lg">
+            <h3 class="text-xl font-semibold text-red-400">🎬 Secure Streaming</h3>
+            <p>Stream in HD quality with zero interruptions and **anti-piracy measures** built-in.</p>
+          </div>
+          <div class="bg-gray-800 p-6 rounded-lg">
+            <h3 class="text-xl font-semibold text-red-400">💰 Monetization & DRM</h3>
+            <p>Protect and monetize your premium content with **digital rights management (DRM)** and watermarking technology.</p>
+          </div>
+        </div>
       </div>
     </section>
 
-    <section class="p-6">
-      <h2 class="text-2xl font-bold mb-4">Horror</h2>
-      <div class="flex space-x-4 overflow-x-auto">
-        <div class="w-48 h-64 bg-gray-700 rounded-lg" data-aos="zoom-in"></div>
-        <div class="w-48 h-64 bg-gray-700 rounded-lg" data-aos="zoom-in"></div>
-        <div class="w-48 h-64 bg-gray-700 rounded-lg" data-aos="zoom-in"></div>
-      </div>
-    </section>
-
-    <section class="p-6">
-      <h2 class="text-2xl font-bold mb-4">Comedy</h2>
-      <div class="flex space-x-4 overflow-x-auto">
-        <div class="w-48 h-64 bg-gray-700 rounded-lg" data-aos="zoom-in"></div>
-        <div class="w-48 h-64 bg-gray-700 rounded-lg" data-aos="zoom-in"></div>
-        <div class="w-48 h-64 bg-gray-700 rounded-lg" data-aos="zoom-in"></div>
-      </div>
+    <!-- Call to Action -->
+    <section class="py-20 bg-red-600 text-center text-white">
+      <h2 class="text-4xl font-bold">Start Streaming Securely Today</h2>
+      <p class="mt-4">Join the platform that protects your content while delivering the best viewing experience.</p>
+      <a href="/signup" class="mt-4 inline-block bg-white text-red-600 px-6 py-3 rounded-lg text-lg font-semibold">Start Free Trial</a>
     </section>
 
     <!-- Footer -->
-    <footer class="bg-gray-800 text-center p-4 mt-6">
-      <p>&copy; 2025 MediaGuard. All rights reserved.</p>
+    <footer class="bg-gray-800 text-center p-4 text-gray-300">
+      <p>© 2025 MediaGuard | Secure Your Content | <a href="/contact" class="text-blue-400 hover:underline">Contact Us</a></p>
     </footer>
-
-    <!-- Login Page -->
-    <div
-      class="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-70 hidden"
-      id="loginModal"
-    >
-      <div class="bg-gray-800 p-8 rounded-lg w-96" data-aos="fade-up">
-        <h2 class="text-2xl font-bold mb-4">Login to MediaGuard</h2>
-        <input
-          type="email"
-          placeholder="Email"
-          class="w-full p-2 mb-4 bg-gray-700 rounded"
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          class="w-full p-2 mb-4 bg-gray-700 rounded"
-        />
-        <button class="w-full p-2 bg-red-600 rounded hover:bg-red-700">
-          Login
-        </button>
-        <p class="mt-4 text-sm">
-          Don't have an account? <a href="#" class="text-red-500">Sign up</a>
-        </p>
-      </div>
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
-    <script>
-      AOS.init();
-    </script>
   </body>
 </html>

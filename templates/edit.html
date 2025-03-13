@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Video - Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-900 text-white flex items-center justify-center min-h-screen">
+    <div class="bg-gray-800 p-8 rounded-lg w-full max-w-2xl shadow-lg">
+      <h2 class="text-2xl font-bold mb-6 text-center">Edit Video</h2>
+
+      <!-- Flash Messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="p-3 mb-4 text-white rounded 
+                {% if category == 'success' %} bg-green-600 {% else %} bg-red-600 {% endif %}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <form action="/edit" method="post" enctype="multipart/form-data">
+        <!-- Title -->
+        <label class="block mb-2 font-semibold">Title</label>
+        <input
+          type="text"
+          name="title"
+          required
+          value="{{ video.title }}"
+          class="w-full p-2 mb-4 bg-gray-700 rounded"
+        />
+
+        <!-- Description -->
+        <label class="block mb-2 font-semibold">Description</label>
+        <textarea
+          name="description"
+          required
+          class="w-full p-2 mb-4 bg-gray-700 rounded"
+        >{{ video.description }}</textarea>
+
+        <!-- Category -->
+        <label class="block mb-2 font-semibold">Category</label>
+        <select name="category" required class="w-full p-2 mb-4 bg-gray-700 rounded">
+          <option value="Entertainment" {% if video.category == "Entertainment" %}selected{% endif %}>Entertainment</option>
+          <option value="Horror" {% if video.category == "Horror" %}selected{% endif %}>Horror</option>
+          <option value="Comedy" {% if video.category == "Comedy" %}selected{% endif %}>Comedy</option>
+          <option value="Drama" {% if video.category == "Drama" %}selected{% endif %}>Drama</option>
+          <option value="Action" {% if video.category == "Action" %}selected{% endif %}>Action</option>
+        </select>
+
+        <!-- Release Date -->
+        <label class="block mb-2 font-semibold">Release Date</label>
+        <input
+          type="date"
+          name="release_date"
+          required
+          value="{{ video.release_date }}"
+          class="w-full p-2 mb-4 bg-gray-700 rounded"
+        />
+
+        <!-- Video URL -->
+        <label class="block mb-2 font-semibold">Video URL</label>
+        <input
+          type="url"
+          name="video_url"
+          required
+          value="{{ video.video_url }}"
+          class="w-full p-2 mb-4 bg-gray-700 rounded"
+        />
+
+        <!-- Thumbnail Image -->
+        <label class="block mb-2 font-semibold">Thumbnail Image</label>
+        <input
+          type="file"
+          name="thumbnail"
+          accept="image/*"
+          class="w-full p-2 mb-4 bg-gray-700 rounded"
+        />
+        <img src="{{ video.thumbnail }}" alt="Current Thumbnail" class="w-full h-auto rounded-lg mt-2" />
+
+        <!-- Duration -->
+        <label class="block mb-2 font-semibold">Duration (Minutes)</label>
+        <input
+          type="number"
+          name="duration"
+          required
+          value="{{ video.duration }}"
+          class="w-full p-2 mb-4 bg-gray-700 rounded"
+        />
+
+        <!-- Language -->
+        <label class="block mb-2 font-semibold">Language</label>
+        <select name="language" required class="w-full p-2 mb-4 bg-gray-700 rounded">
+          <option value="English" {% if video.language == "English" %}selected{% endif %}>English</option>
+          <option value="Hindi" {% if video.language == "Hindi" %}selected{% endif %}>Hindi</option>
+          <option value="Spanish" {% if video.language == "Spanish" %}selected{% endif %}>Spanish</option>
+          <option value="French" {% if video.language == "French" %}selected{% endif %}>French</option>
+          <option value="Other" {% if video.language == "Other" %}selected{% endif %}>Other</option>
+        </select>
+
+        <!-- Age Rating -->
+        <label class="block mb-2 font-semibold">Age Rating</label>
+        <select name="age_rating" required class="w-full p-2 mb-4 bg-gray-700 rounded">
+          <option value="G" {% if video.age_rating == "G" %}selected{% endif %}>G - General Audience</option>
+          <option value="PG" {% if video.age_rating == "PG" %}selected{% endif %}>PG - Parental Guidance</option>
+          <option value="PG-13" {% if video.age_rating == "PG-13" %}selected{% endif %}>PG-13 - Parents Strongly Cautioned</option>
+          <option value="R" {% if video.age_rating == "R" %}selected{% endif %}>R - Restricted</option>
+        </select>
+
+        <!-- Submit Button -->
+        <button type="submit" class="w-full p-2 bg-blue-600 rounded-lg hover:bg-blue-700 transition duration-300 transform hover:scale-105 shadow-lg">
+          Update Video
+        </button>
+      </form>
+    </div>
+  </body>
+</html>
