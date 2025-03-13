@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - MediaGuard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css"
+    />
+  </head>
+  <body class="bg-gray-900 text-white">
+    <!-- Navbar -->
+    <nav
+      class="flex justify-between items-center p-4 bg-gray-800 w-full fixed top-0 z-10"
+    >
+      <h1 class="text-2xl font-bold">MediaGuard</h1>
+      <div class="flex space-x-4">
+        <a href="/" class="px-4 py-2 bg-red-600 rounded hover:bg-red-700"
+          >Home</a
+        >
+      </div>
+    </nav>
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %}
+    <div class="fixed top-4 right-4 space-y-2 z-50">
+      {% for category, message in messages %}
+      <div
+        class="px-4 py-2 rounded-lg text-white shadow-lg {% if category == 'success' %} bg-green-600 {% elif category == 'danger' %} bg-red-600 {% elif category == 'warning' %} bg-yellow-600 {% elif category == 'info' %} bg-blue-600 {% endif %}"
+      >
+        {{ message }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %} {% endwith %}
+
+    <div class="flex items-center justify-center h-screen pt-16">
+      <div class="bg-gray-800 p-8 rounded-lg w-96" data-aos="fade-up">
+        <h2 class="text-2xl font-bold mb-4 text-center">Login to MediaGuard</h2>
+        <form action="/login" method="post">
+        <input
+          type="email"
+          placeholder="Email"
+          name="email"
+          class="w-full p-2 mb-4 bg-gray-700 rounded"
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          name="password"
+          class="w-full p-2 mb-4 bg-gray-700 rounded"
+        />
+        <button
+        class="w-full p-2 bg-red-600 rounded-lg hover:bg-red-700 transition duration-300 transform hover:scale-105 shadow-lg"
+        type="submit"
+    >
+        Login
+    </button>
+    
+
+    </form>
+        <p class="mt-4 text-sm text-center">
+          Don't have an account?
+          <a href="/register" class="text-red-500">Sign up</a>
+        </p>
+        <p class="mt-2 text-sm text-center">
+          <a href="#" class="text-gray-400">Forgot Password?</a>
+        </p>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+      AOS.init();
+    </script>
+  </body>
+</html>
