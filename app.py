@@ -480,7 +480,8 @@ def watch():
     url=request.args.get("url")
     return render_template("watch.html",video=url)
 
-@app.route('/mydownloads')
+@app.route("/mydownloads")
+@login_required
 def my_downloads():
     if 'user_id' not in session:
         return redirect(url_for('login'))

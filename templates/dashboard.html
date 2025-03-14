@@ -41,7 +41,14 @@
       </div>
       <div class="flex space-x-4 items-center">
         <input type="text" placeholder="Search..." class="p-2 rounded bg-gray-700/50 text-white" />
-        <p class="hidden md:block text-sm">Welcome, <span class="font-bold">User</span></p>
+        
+        <!-- Add Downloads Button -->
+        <a href="/mydownloads" class="px-4 py-2 bg-gray-700/50 rounded hover:bg-gray-600 transition duration-300 flex items-center space-x-2">
+          <i class="fas fa-download"></i>
+          <span class="hidden md:inline">Downloads</span>
+        </a>
+        
+        <p class="hidden md:block text-sm">Welcome, <span class="font-bold">{{ session.email }}</span></p>
         <a href="/logout">
           <button class="px-4 py-2 bg-red-600 rounded hover:bg-red-700 transition duration-300">
             <i class="fas fa-sign-out-alt mr-2"></i>Logout

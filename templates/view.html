@@ -129,7 +129,13 @@
               </a>
               
               {% if session.user_id %}
-                {% if downloaded %}
+                {% if session['role'] == 'admin' %}
+                  <button disabled 
+                          class="flex-1 px-6 py-3 bg-gray-600 rounded-lg cursor-not-allowed text-center flex items-center justify-center space-x-2">
+                    <i class="fas fa-lock"></i>
+                    <span>Admin Cannot Download</span>
+                  </button>
+                {% elif downloaded %}
                   <button disabled 
                           class="flex-1 px-6 py-3 bg-gray-600 rounded-lg cursor-not-allowed text-center flex items-center justify-center space-x-2">
                     <i class="fas fa-check"></i>
