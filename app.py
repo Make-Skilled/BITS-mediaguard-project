@@ -9,6 +9,7 @@ import os
 import uuid
 import yt_dlp
 import subprocess
+import threading
 
 app = Flask(__name__, template_folder='templates')
 app.secret_key = 'Medi@'  # Change this to a strong secret key
@@ -74,6 +75,8 @@ def add_text_watermark(input_video, text):
 
     return output_video
 
+PROCESSING_VIDEOS = {}
+
 @app.route('/download')
 def download_api():
     """API Endpoint to download and watermark a video."""
@@ -84,14 +87,66 @@ def download_api():
         return jsonify({"error": "Missing YouTube URL"}), 400
 
     try:
-        downloaded_video = download_video(video_url)
-        watermarked_video = add_text_watermark(downloaded_video, watermark_text)
+        # Generate a unique ID for this download
+        download_id = str(uuid.uuid4())
+        PROCESSING_VIDEOS[download_id] = False
+
+        # Start processing in background
+        def process_video():
+            try:
+                downloaded_video = download_video(video_url)
+                watermarked_video = add_text_watermark(downloaded_video, watermark_text)
+                PROCESSING_VIDEOS[download_id] = watermarked_video
+            except Exception as e:
+                PROCESSING_VIDEOS[download_id] = str(e)
+
+        threading.Thread(target=process_video).start()
         
-        return jsonify({
-            "message": "Video processed successfully",
-            "download_url": f"/download/{watermarked_video}"
-        })
+        # Redirect to loading page
+        return redirect(url_for('loading_page', download_id=download_id))
     
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/loading')
+def loading_page():
+    """Display loading page while video is being processed."""
+    download_id = request.args.get('download_id')
+    if not download_id or download_id not in PROCESSING_VIDEOS:
+        return redirect(url_for('home'))
+    return render_template('loading.html')
+
+@app.route('/download/<download_id>')
+def get_processed_video(download_id):
+    """Check status or download processed video."""
+    if download_id not in PROCESSING_VIDEOS:
+        return jsonify({"error": "Invalid download ID"}), 404
+
+    result = PROCESSING_VIDEOS[download_id]
+    
+    # If result is False, still processing
+    if result is False:
+        return jsonify({"status": "processing"}), 202
+    
+    # If result is string, there was an error
+    if isinstance(result, str):
+        return jsonify({"error": result}), 500
+
+    # Result is filename, send the file
+    try:
+        file_path = os.path.join(DOWNLOAD_FOLDER, result)
+        response = send_file(file_path, as_attachment=True)
+        
+        # Clean up after sending
+        @response.call_on_close
+        def cleanup():
+            try:
+                os.remove(file_path)
+                del PROCESSING_VIDEOS[download_id]
+            except:
+                pass
+
+        return response
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

@@ -2,16 +2,22 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Watch - MediaGuard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     <style>
       body {
-        font-family: Arial, sans-serif;
+        font-family: 'Inter', sans-serif;
+        background-color: #0a0a0a;
       }
+
       .fade-in {
         opacity: 0;
         transform: translateY(20px);
         animation: fadeIn 0.5s ease-out forwards;
       }
+
       @keyframes fadeIn {
         from {
           opacity: 0;
@@ -22,36 +28,195 @@
           transform: translateY(0);
         }
       }
+
+      .glass-effect {
+        background: rgba(17, 24, 39, 0.8);
+        backdrop-filter: blur(8px);
+      }
+
+      .video-container {
+        position: relative;
+        width: 100%;
+        height: 0;
+        padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+        background-color: #000;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      }
+
+      .video-container iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
+
+      .controls-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 20px;
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .video-container:hover .controls-overlay {
+        opacity: 1;
+      }
+
+      /* Custom scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: #1f2937;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: #4b5563;
+        border-radius: 4px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: #6b7280;
+      }
     </style>
   </head>
-  <body class="bg-gray-900 text-white">
+  <body class="bg-gray-900 text-white min-h-screen">
     <!-- Navbar -->
-    <nav class="flex justify-between items-center p-4 bg-gray-800 fixed top-0 left-0 right-0 w-full">
-      <span class="text-xl font-bold">MediaGuard</span>
-      <!-- Moved back button to the right side -->
-      <button onclick="window.history.back();" class="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600 transition">Back</button>
+    <nav class="glass-effect flex justify-between items-center p-4 fixed top-0 left-0 right-0 w-full z-50">
+      <div class="flex items-center space-x-3">
+        <i class="fas fa-shield-alt text-red-500 text-2xl"></i>
+        <span class="text-xl font-bold">MediaGuard</span>
+      </div>
+      <div class="flex items-center space-x-4">
+        <button id="toggleTheater" class="px-4 py-2 bg-gray-700 rounded-lg hover:bg-gray-600 transition-all duration-300 flex items-center space-x-2">
+          <i class="fas fa-expand"></i>
+          <span class="hidden sm:inline">Theater Mode</span>
+        </button>
+        <button onclick="window.history.back();" class="px-4 py-2 bg-gray-700 rounded-lg hover:bg-gray-600 transition-all duration-300 flex items-center space-x-2">
+          <i class="fas fa-arrow-left"></i>
+          <span class="hidden sm:inline">Back</span>
+        </button>
+      </div>
     </nav>
 
-    <!-- Video Section -->
-    <section class="bg-gray-900 text-white p-6 pt-20 fade-in">
-      <div class="max-w-5xl mx-auto bg-gray-800 p-6 rounded-lg shadow-lg">
-        <div class="relative w-full h-0" style="padding-bottom: 56.25%"> <!-- 16:9 Aspect Ratio -->
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 pt-20 pb-8">
+      <!-- Video Player Section -->
+      <section class="max-w-7xl mx-auto fade-in" id="videoSection">
+        <div class="video-container">
           <iframe
-            class="absolute top-0 left-0 w-full h-full rounded-lg shadow-md"
             src="{{ video }}"
-            frameborder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowfullscreen
           ></iframe>
+          <div class="controls-overlay">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-4">
+                <button class="text-white hover:text-red-500 transition-colors">
+                  <i class="fas fa-play"></i>
+                </button>
+                <div class="flex items-center space-x-2">
+                  <i class="fas fa-volume-up"></i>
+                  <div class="w-24 h-1 bg-gray-600 rounded-full">
+                    <div class="w-3/4 h-full bg-red-500 rounded-full"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center space-x-4">
+                <button class="text-white hover:text-red-500 transition-colors">
+                  <i class="fas fa-closed-captioning"></i>
+                </button>
+                <button class="text-white hover:text-red-500 transition-colors">
+                  <i class="fas fa-cog"></i>
+                </button>
+                <button class="text-white hover:text-red-500 transition-colors">
+                  <i class="fas fa-expand"></i>
+                </button>
+              </div>
+            </div>
+            <div class="mt-4">
+              <div class="w-full h-1 bg-gray-600 rounded-full">
+                <div class="w-1/2 h-full bg-red-500 rounded-full"></div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </main>
 
     <!-- Footer -->
-    <footer class="bg-gray-800 text-center p-4">
-      <button onclick="window.history.back();" class="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600 transition">
-        Back
-      </button>
+    <footer class="fixed bottom-0 left-0 right-0 bg-gray-800 text-center p-4">
+      <div class="flex justify-center items-center space-x-6">
+        <button class="text-gray-400 hover:text-white transition-colors">
+          <i class="fas fa-heart mr-2"></i>
+          <span class="hidden sm:inline">Add to Favorites</span>
+        </button>
+        <button class="text-gray-400 hover:text-white transition-colors">
+          <i class="fas fa-share mr-2"></i>
+          <span class="hidden sm:inline">Share</span>
+        </button>
+        <button class="text-gray-400 hover:text-white transition-colors">
+          <i class="fas fa-flag mr-2"></i>
+          <span class="hidden sm:inline">Report Issue</span>
+        </button>
+      </div>
     </footer>
+
+    <script>
+      // Theater Mode Toggle
+      const toggleTheater = document.getElementById('toggleTheater');
+      const videoSection = document.getElementById('videoSection');
+      let theaterMode = false;
+
+      toggleTheater.addEventListener('click', () => {
+        theaterMode = !theaterMode;
+        if (theaterMode) {
+          videoSection.classList.remove('max-w-7xl');
+          videoSection.classList.add('max-w-full');
+          toggleTheater.querySelector('i').classList.remove('fa-expand');
+          toggleTheater.querySelector('i').classList.add('fa-compress');
+        } else {
+          videoSection.classList.add('max-w-7xl');
+          videoSection.classList.remove('max-w-full');
+          toggleTheater.querySelector('i').classList.add('fa-expand');
+          toggleTheater.querySelector('i').classList.remove('fa-compress');
+        }
+      });
+
+      // Keyboard shortcuts
+      document.addEventListener('keydown', (e) => {
+        if (e.code === 'Space') {
+          e.preventDefault();
+          // Toggle play/pause
+        } else if (e.code === 'KeyF') {
+          e.preventDefault();
+          // Toggle fullscreen
+        } else if (e.code === 'KeyM') {
+          e.preventDefault();
+          // Toggle mute
+        } else if (e.code === 'KeyT') {
+          e.preventDefault();
+          toggleTheater.click();
+        }
+      });
+
+      // Hide controls overlay after inactivity
+      let timeout;
+      document.addEventListener('mousemove', () => {
+        clearTimeout(timeout);
+        document.body.style.cursor = 'default';
+        timeout = setTimeout(() => {
+          document.body.style.cursor = 'none';
+        }, 3000);
+      });
+    </script>
   </body>
 </html>

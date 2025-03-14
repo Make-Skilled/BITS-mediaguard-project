@@ -5,129 +5,157 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Add Video - Admin Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
   </head>
-  <body class="bg-gray-900 text-white flex items-center justify-center min-h-screen">
-    <div class="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-2xl">
-      <!-- Page Header -->
-      <h1 class="text-3xl font-bold text-center mb-6">Add New Video</h1>
+  <body class="bg-gray-900 text-white min-h-screen">
+    <!-- Navbar -->
+    <nav class="flex justify-between items-center p-4 bg-gray-800 fixed w-full z-10 top-0">
+      <div class="flex items-center space-x-2">
+        <i class="fas fa-shield-alt text-red-500 text-2xl"></i>
+        <h1 class="text-2xl font-bold text-red-500">MediaGuard</h1>
+      </div>
+      <div class="flex space-x-4 items-center">
+        <a href="/admindashboard" class="px-4 py-2 bg-red-600 rounded hover:bg-red-700 transition duration-300 flex items-center">
+          <i class="fas fa-home mr-2"></i>
+          Dashboard
+        </a>
+        <a href="/logout" class="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600 transition duration-300 flex items-center">
+          <i class="fas fa-sign-out-alt mr-2"></i>
+          Logout
+        </a>
+      </div>
+    </nav>
 
-      <!-- Flash Messages -->
-      {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-          {% for category, message in messages %}
-          <div
-            class="px-4 py-2 mb-4 rounded-lg text-white shadow-lg 
-            {% if category == 'success' %} bg-green-600 {% else %} bg-red-600 {% endif %}"
-          >
-            {{ message }}
-          </div>
-          {% endfor %}
-        {% endif %}
-      {% endwith %}
+    <!-- Main Content - Adjusted to account for navbar -->
+    <div class="pt-20 px-4">
+      <div class="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-2xl mx-auto">
+        <!-- Page Header -->
+        <h1 class="text-3xl font-bold text-center mb-6">Add New Video</h1>
 
-      <!-- Video Upload Form -->
-      <form action="/add_video" method="POST" enctype="multipart/form-data">
-        <div class="mb-4">
-          <label class="block mb-1 font-semibold">Title</label>
-          <input
-            type="text"
-            name="title"
-            required
-            class="w-full p-3 rounded bg-gray-700 text-white focus:ring-2 focus:ring-red-500 focus:outline-none"
-            placeholder="Enter video title"
-          />
-        </div>
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+            <div
+              class="px-4 py-2 mb-4 rounded-lg text-white shadow-lg 
+              {% if category == 'success' %} bg-green-600 {% else %} bg-red-600 {% endif %}"
+            >
+              {{ message }}
+            </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
 
-        <div class="mb-4">
-          <label class="block mb-1 font-semibold">Description</label>
-          <textarea
-            name="description"
-            required
-            class="w-full p-3 rounded bg-gray-700 h-24 resize-none focus:ring-2 focus:ring-red-500"
-            placeholder="Enter video description"
-          ></textarea>
-        </div>
-
-        <div class="mb-4">
-          <label class="block mb-1 font-semibold">Category</label>
-          <select name="category" required class="w-full p-3 rounded bg-gray-700">
-            <option value="Entertainment">Entertainment</option>
-            <option value="Horror">Horror</option>
-            <option value="Comedy">Comedy</option>
-            <option value="Drama">Drama</option>
-            <option value="Action">Action</option>
-          </select>
-        </div>
-
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block mb-1 font-semibold">Release Date</label>
-            <input type="date" name="release_date" required class="w-full p-3 rounded bg-gray-700 text-white" />
-          </div>
-          <div>
-            <label class="block mb-1 font-semibold">Duration (mins)</label>
+        <!-- Video Upload Form -->
+        <form action="/admin/add-video" method="POST" enctype="multipart/form-data">
+          <div class="mb-4">
+            <label class="block mb-1 font-semibold">Title</label>
             <input
-              type="number"
-              name="duration"
+              type="text"
+              name="title"
               required
-              class="w-full p-3 rounded bg-gray-700 text-white"
-              placeholder="Enter duration"
+              class="w-full p-3 rounded bg-gray-700 text-white focus:ring-2 focus:ring-red-500 focus:outline-none"
+              placeholder="Enter video title"
             />
           </div>
-        </div>
 
-        <div class="grid grid-cols-2 gap-4 mt-4">
-          <div>
+          <div class="mb-4">
+            <label class="block mb-1 font-semibold">Description</label>
+            <textarea
+              name="description"
+              required
+              class="w-full p-3 rounded bg-gray-700 h-24 resize-none focus:ring-2 focus:ring-red-500"
+              placeholder="Enter video description"
+            ></textarea>
+          </div>
+
+          <div class="mb-4">
             <label class="block mb-1 font-semibold">Category</label>
-            <select name="category" required class="w-full p-3 bg-gray-700 rounded">
-              <option value="Action">Action</option>
-              <option value="Drama">Drama</option>
-              <option value="Comedy">Comedy</option>
-              <option value="Horror">Horror</option>
+            <select name="category" required class="w-full p-3 rounded bg-gray-700">
               <option value="Entertainment">Entertainment</option>
+              <option value="Horror">Horror</option>
+              <option value="Comedy">Comedy</option>
+              <option value="Drama">Drama</option>
+              <option value="Action">Action</option>
             </select>
           </div>
 
-          <div>
-            <label class="block mb-1 font-semibold">Age Rating</label>
-            <select name="age_rating" required class="w-full p-3 rounded bg-gray-700">
-              <option value="G">G - General Audience</option>
-              <option value="PG">PG - Parental Guidance</option>
-              <option value="PG-13">PG-13 - Teens</option>
-              <option value="R">R - Restricted</option>
-            </select>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block mb-1 font-semibold">Release Date</label>
+              <input type="date" name="release_date" required class="w-full p-3 rounded bg-gray-700 text-white" />
+            </div>
+            <div>
+              <label class="block mb-1 font-semibold">Duration (mins)</label>
+              <input
+                type="number"
+                name="duration"
+                required
+                class="w-full p-3 rounded bg-gray-700 text-white"
+                placeholder="Enter duration"
+              />
+            </div>
           </div>
-        </div>
 
-        <!-- Video URL -->
-        <div class="mb-4 mt-4">
-          <label class="block mb-1 font-semibold">Video URL</label>
-          <input
-            type="url"
-            name="video_url"
-            required
-            class="w-full p-3 rounded bg-gray-700 text-white"
-            placeholder="Paste video URL"
-          />
-        </div>
+          <div class="grid grid-cols-2 gap-4 mt-4">
+            <div>
+              <label class="block mb-1 font-semibold">Category</label>
+              <select name="category" required class="w-full p-3 bg-gray-700 rounded">
+                <option value="Action">Action</option>
+                <option value="Drama">Drama</option>
+                <option value="Comedy">Comedy</option>
+                <option value="Horror">Horror</option>
+                <option value="Entertainment">Entertainment</option>
+              </select>
+            </div>
 
-        <!-- Thumbnail Upload -->
-        <div class="mb-4">
-          <label class="block mb-1 font-semibold">Upload Thumbnail</label>
-          <input
-            type="file"
-            name="thumbnail"
-            accept="image/*"
-            required
-            class="w-full p-2 rounded bg-gray-700 text-white"
-          />
-        </div>
+            <div>
+              <label class="block mb-1 font-semibold">Age Rating</label>
+              <select name="age_rating" required class="w-full p-3 rounded bg-gray-700">
+                <option value="G">G - General Audience</option>
+                <option value="PG">PG - Parental Guidance</option>
+                <option value="PG-13">PG-13 - Teens</option>
+                <option value="R">R - Restricted</option>
+              </select>
+            </div>
+          </div>
 
-        <!-- Submit Button -->
-        <button type="submit" class="w-full mt-4 p-3 bg-red-600 hover:bg-red-700 transition rounded-lg shadow-lg">
-          Add Video
-        </button>
-      </form>
+          <!-- Video URL -->
+          <div class="mb-4 mt-4">
+            <label class="block mb-1 font-semibold">Video URL</label>
+            <input
+              type="url"
+              name="video_url"
+              required
+              class="w-full p-3 rounded bg-gray-700 text-white"
+              placeholder="Paste video URL"
+            />
+          </div>
+
+          <!-- Thumbnail Upload -->
+          <div class="mb-4">
+            <label class="block mb-1 font-semibold">Upload Thumbnail</label>
+            <input
+              type="file"
+              name="thumbnail"
+              accept="image/*"
+              required
+              class="w-full p-2 rounded bg-gray-700 text-white"
+            />
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="w-full mt-4 p-3 bg-red-600 hover:bg-red-700 transition rounded-lg shadow-lg">
+            Add Video
+          </button>
+        </form>
+      </div>
     </div>
   </body>
 </html>
