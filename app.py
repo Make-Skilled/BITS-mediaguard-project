@@ -10,6 +10,7 @@ import uuid
 import yt_dlp
 import subprocess
 import threading
+from functools import wraps
 
 app = Flask(__name__, template_folder='templates')
 app.secret_key = 'Medi@'  # Change this to a strong secret key
@@ -20,6 +21,7 @@ client = MongoClient("mongodb+srv://kr4785543:1234567890@cluster0.220yz.mongodb.
 db = client["mediaguard"]
 users_collection = db["users"]
 media_collection = db["media"]
+downloads_collection = db['downloads']
 
 # Directory to store uploaded thumbnails
 UPLOAD_FOLDER = "./static/uploads"
@@ -77,19 +79,56 @@ def add_text_watermark(input_video, text):
 
 PROCESSING_VIDEOS = {}
 
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'role' not in session or session['role'] != 'admin':
+            flash('Unauthorized access', 'danger')
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            flash('Please login first', 'danger')
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 @app.route('/download')
 def download_api():
     """API Endpoint to download and watermark a video."""
+    if 'user_id' not in session:
+        return jsonify({"error": "Please login first"}), 401
+
     video_url = request.args.get("url")
+    video_id = request.args.get("video_id")
     watermark_text = "MediaGuard"
 
     if not video_url:
         return jsonify({"error": "Missing YouTube URL"}), 400
 
     try:
+        # Check if already downloaded
+        if video_id:
+            existing_download = downloads_collection.find_one({
+                "user_id": session['user_id'],
+                "video_id": video_id
+            })
+            if existing_download:
+                return jsonify({"error": "Video already downloaded"}), 400
+
         # Generate a unique ID for this download
         download_id = str(uuid.uuid4())
         PROCESSING_VIDEOS[download_id] = False
+
+        # Store video_id in processing info for later
+        PROCESSING_VIDEOS[f"{download_id}_info"] = {
+            "video_id": video_id,
+            "user_id": session['user_id']
+        }
 
         # Start processing in background
         def process_video():
@@ -102,23 +141,28 @@ def download_api():
 
         threading.Thread(target=process_video).start()
         
-        # Redirect to loading page
-        return redirect(url_for('loading_page', download_id=download_id))
+        return jsonify({"download_id": download_id})
     
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 @app.route('/loading')
 def loading_page():
-    """Display loading page while video is being processed."""
+    """Show loading page while video is being processed"""
     download_id = request.args.get('download_id')
-    if not download_id or download_id not in PROCESSING_VIDEOS:
-        return redirect(url_for('home'))
+    return_url = request.args.get('return_url')
+    
+    if not download_id:
+        return redirect('/')
+        
     return render_template('loading.html')
 
 @app.route('/download/<download_id>')
 def get_processed_video(download_id):
     """Check status or download processed video."""
+    if 'user_id' not in session:
+        return jsonify({"error": "Please login first"}), 401
+
     if download_id not in PROCESSING_VIDEOS:
         return jsonify({"error": "Invalid download ID"}), 404
 
@@ -128,14 +172,30 @@ def get_processed_video(download_id):
     if result is False:
         return jsonify({"status": "processing"}), 202
     
-    # If result is string, there was an error
-    if isinstance(result, str):
+    # If result is string and not a filename, there was an error
+    if isinstance(result, str) and not result.endswith(('.mp4', '.mkv', '.avi', '.mov')):
         return jsonify({"error": result}), 500
+
+    # Get stored info
+    download_info = PROCESSING_VIDEOS.get(f"{download_id}_info", {})
+    video_id = download_info.get("video_id")
+    user_id = download_info.get("user_id")
 
     # Result is filename, send the file
     try:
         file_path = os.path.join(DOWNLOAD_FOLDER, result)
+        if not os.path.exists(file_path):
+            return jsonify({"error": "File not found"}), 404
+            
         response = send_file(file_path, as_attachment=True)
+        
+        # Record the download in database
+        if video_id and user_id:
+            downloads_collection.insert_one({
+                "user_id": user_id,
+                "video_id": video_id,
+                "downloaded_at": datetime.datetime.utcnow()
+            })
         
         # Clean up after sending
         @response.call_on_close
@@ -143,12 +203,27 @@ def get_processed_video(download_id):
             try:
                 os.remove(file_path)
                 del PROCESSING_VIDEOS[download_id]
+                if f"{download_id}_info" in PROCESSING_VIDEOS:
+                    del PROCESSING_VIDEOS[f"{download_id}_info"]
             except:
                 pass
 
         return response
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.route('/check-download/<video_id>')
+def check_download(video_id):
+    """Check if user has downloaded this video"""
+    if 'user_id' not in session:
+        return jsonify({"downloaded": False})
+    
+    download = downloads_collection.find_one({
+        "user_id": session['user_id'],
+        "video_id": video_id
+    })
+    
+    return jsonify({"downloaded": bool(download)})
 
 @app.route('/')
 def home():
@@ -162,17 +237,19 @@ def login():
         
         if email=="admin@mediaguard.com" and password=="1234567890":
             session['role'] = "admin"
+            session['user_id'] = "admin"  # Add this line
             return redirect("/admindashboard")
 
         user = users_collection.find_one({"email": email})
         if user and check_password_hash(user["password"], password):
-            session["user_id"] = str(user["_id"])
+            session["user_id"] = str(user["_id"])  # Ensure this is string
             session["email"] = user["email"]
             session["role"] = "user"
             return redirect(url_for("dashboard"))
         else:
-            flash("Invalid email or password!", "danger")
-    
+            flash("Invalid email or password", "danger")
+            return redirect(url_for("login"))
+
     return render_template("login.html")
 
 @app.route("/register", methods=["GET", "POST"])
@@ -282,10 +359,11 @@ def logout():
     return redirect(url_for("home"))
 
 @app.route("/dashboard", methods=["GET"])
+@login_required
 def dashboard():
     try:
         videos = list(media_collection.find())
-        return render_template("dashboard.html",videos=videos)
+        return render_template("dashboard.html", videos=videos)
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
@@ -294,29 +372,37 @@ def addmedia():
     return render_template("add-video.html")
 
 @app.route("/admindashboard", methods=["GET"])
+@admin_required
 def get_all_videos():
     try:
         videos = list(media_collection.find())
-        return render_template("admindashboard.html",videos=videos)
+        return render_template("admindashboard.html", videos=videos)
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
 @app.route("/view", methods=["GET"])
 def view_video():
-    video_id = request.args.get("id")  # Get video ID from query parameters
+    video_id = request.args.get("id")
     if not video_id:
         return "Video ID is required", 400
 
-    # Fetch video details from MongoDB
     video = media_collection.find_one({"_id": ObjectId(video_id)})
-
     if not video:
         return "Video not found", 404
 
-    # Convert MongoDB ObjectId and Date to string format
+    # Convert MongoDB ObjectId to string format
     video["_id"] = str(video["_id"])
+    
+    # Check if user has downloaded this video
+    downloaded = False
+    if 'user_id' in session:
+        download = downloads_collection.find_one({
+            "user_id": session['user_id'],
+            "video_id": video_id
+        })
+        downloaded = bool(download)
 
-    return render_template("view.html", video=video)  # Render HTML page
+    return render_template("view.html", video=video, downloaded=downloaded)  # Render HTML page
 
 @app.route("/edit")
 def vid_edit():
@@ -393,6 +479,33 @@ def delete_video():
 def watch():
     url=request.args.get("url")
     return render_template("watch.html",video=url)
+
+@app.route('/mydownloads')
+def my_downloads():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    try:
+        # Get all downloads for the current user
+        downloads = list(downloads_collection.find({"user_id": session['user_id']}).sort("downloaded_at", -1))
+        
+        # Fetch video details for each download
+        for download in downloads:
+            video = media_collection.find_one({"_id": ObjectId(download["video_id"])})
+            if video:
+                video["_id"] = str(video["_id"])  # Convert ObjectId to string
+                download["video"] = video
+            else:
+                download["video"] = {
+                    "title": "Video Unavailable",
+                    "thumbnail": "/static/placeholder.jpg",  # Make sure to have a placeholder image
+                    "_id": None
+                }
+        
+        return render_template('mydownloads.html', downloads=downloads)
+    except Exception as e:
+        flash('An error occurred while fetching your downloads', 'danger')
+        return redirect(url_for('dashboard'))
 
 if __name__ == '__main__':
     app.run(debug=True)

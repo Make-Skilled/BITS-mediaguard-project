@@ -11,29 +11,36 @@
       .carousel {
         position: relative;
         overflow: hidden;
+        height: 100vh; /* Full viewport height */
       }
       .carousel-inner {
         white-space: nowrap;
         transition: transform 0.5s ease-in-out;
+        height: 100%;
       }
       .carousel-item {
         display: inline-block;
         width: 100%;
+        height: 100%;
       }
       .gradient-overlay {
         background: linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.8) 100%);
       }
+      /* Add styles for navbar background */
+      .navbar-gradient {
+        background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 50%, transparent 100%);
+      }
     </style>
   </head>
   <body class="bg-gray-900 text-white">
-    <!-- Navbar -->
-    <nav class="flex justify-between items-center p-4 bg-gray-800 fixed w-full z-10">
+    <!-- Navbar - Updated with gradient background -->
+    <nav class="navbar-gradient flex justify-between items-center p-4 fixed w-full z-10">
       <div class="flex items-center space-x-2">
         <i class="fas fa-shield-alt text-red-500 text-2xl"></i>
         <h1 class="text-2xl font-bold text-red-500">MediaGuard</h1>
       </div>
       <div class="flex space-x-4 items-center">
-        <input type="text" placeholder="Search..." class="p-2 rounded bg-gray-700 text-white" />
+        <input type="text" placeholder="Search..." class="p-2 rounded bg-gray-700/50 text-white" />
         <p class="hidden md:block text-sm">Welcome, <span class="font-bold">User</span></p>
         <a href="/logout">
           <button class="px-4 py-2 bg-red-600 rounded hover:bg-red-700 transition duration-300">
@@ -60,10 +67,10 @@
       {% endif %}
     {% endwith %}
 
-    <!-- Hero Carousel -->
-    <div class="carousel mt-16 relative h-[600px]">
-      <div class="carousel-inner h-full">
-        {% for video in videos[:5] %}
+    <!-- Hero Carousel - Removed mt-16 and updated for full height -->
+    <div class="carousel relative">
+      <div class="carousel-inner">
+        {% for video in videos[:4] %}
         <div class="carousel-item relative">
           <img src="{{ video.thumbnail }}" class="w-full h-full object-cover" alt="{{ video.title }}" />
           <div class="absolute inset-0 gradient-overlay flex items-center">
@@ -112,19 +119,35 @@
         <i class="fas fa-film text-red-500 mr-2"></i>{{ category }}
       </h2>
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {% for video in videos if video.category == category %}
-        <div class="bg-gray-800 rounded-lg overflow-hidden transform hover:scale-105 transition duration-300">
-          <a href="/view?id={{video._id}}">
-            <img src="{{ video.thumbnail }}" alt="{{ video.title }}" class="w-full h-64 object-cover" />
-            <div class="p-4">
-              <h3 class="font-bold text-lg mb-2">{{ video.title }}</h3>
-              <p class="text-gray-400 text-sm">{{ video.duration }} mins</p>
-            </div>
-          </a>
-        </div>
+        {% if category == "Latest Movies" %}
+          {% for video in videos[-5:]|reverse %}
+          <div class="bg-gray-800 rounded-lg overflow-hidden transform hover:scale-105 transition duration-300">
+            <a href="/view?id={{video._id}}">
+              <img src="{{ video.thumbnail }}" alt="{{ video.title }}" class="w-full h-64 object-cover" />
+              <div class="p-4">
+                <h3 class="font-bold text-lg mb-2">{{ video.title }}</h3>
+                <p class="text-gray-400 text-sm">{{ video.duration }} mins</p>
+              </div>
+            </a>
+          </div>
+          {% else %}
+          <p class="text-gray-400 col-span-full text-center py-8">No recent videos available.</p>
+          {% endfor %}
         {% else %}
-        <p class="text-gray-400 col-span-full text-center py-8">No videos available in this category.</p>
-        {% endfor %}
+          {% for video in videos if video.category == category %}
+          <div class="bg-gray-800 rounded-lg overflow-hidden transform hover:scale-105 transition duration-300">
+            <a href="/view?id={{video._id}}">
+              <img src="{{ video.thumbnail }}" alt="{{ video.title }}" class="w-full h-64 object-cover" />
+              <div class="p-4">
+                <h3 class="font-bold text-lg mb-2">{{ video.title }}</h3>
+                <p class="text-gray-400 text-sm">{{ video.duration }} mins</p>
+              </div>
+            </a>
+          </div>
+          {% else %}
+          <p class="text-gray-400 col-span-full text-center py-8">No videos available in this category.</p>
+          {% endfor %}
+        {% endif %}
       </div>
     </section>
     {% endfor %}

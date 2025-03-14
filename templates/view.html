@@ -51,7 +51,7 @@
         <h1 class="text-2xl font-bold text-red-500">MediaGuard</h1>
       </div>
       <div class="flex items-center space-x-4">
-        <button onclick="window.history.back();" class="px-4 py-2 bg-gray-700 rounded-lg hover:bg-gray-600 transition duration-300 flex items-center space-x-2">
+        <button onclick="handleBackNavigation();" class="px-4 py-2 bg-gray-700 rounded-lg hover:bg-gray-600 transition duration-300 flex items-center space-x-2">
           <i class="fas fa-arrow-left"></i>
           <span>Back</span>
         </button>
@@ -128,11 +128,28 @@
                 <span>Watch Now</span>
               </a>
               
-              <a href="/download?url={{ video.video_url }}" 
-                 class="flex-1 px-6 py-3 bg-red-600 rounded-lg hover:bg-red-700 transition duration-300 text-center flex items-center justify-center space-x-2">
-                <i class="fas fa-download"></i>
-                <span>Download</span>
-              </a>
+              {% if session.user_id %}
+                {% if downloaded %}
+                  <button disabled 
+                          class="flex-1 px-6 py-3 bg-gray-600 rounded-lg cursor-not-allowed text-center flex items-center justify-center space-x-2">
+                    <i class="fas fa-check"></i>
+                    <span>Downloaded</span>
+                  </button>
+                {% else %}
+                  <a href="/download?url={{ video.video_url }}&video_id={{ video._id }}" 
+                     id="downloadButton"
+                     class="flex-1 px-6 py-3 bg-red-600 rounded-lg hover:bg-red-700 transition duration-300 text-center flex items-center justify-center space-x-2">
+                    <i class="fas fa-download"></i>
+                    <span>Download</span>
+                  </a>
+                {% endif %}
+              {% else %}
+                <a href="/login" 
+                   class="flex-1 px-6 py-3 bg-gray-600 rounded-lg hover:bg-gray-700 transition duration-300 text-center flex items-center justify-center space-x-2">
+                  <i class="fas fa-lock"></i>
+                  <span>Login to Download</span>
+                </a>
+              {% endif %}
 
               {% if session['role'] == 'admin' %}
               <div class="flex w-full gap-4">
@@ -165,7 +182,7 @@
 
     <!-- Add this script before closing body tag -->
     <script>
-    document.getElementById('downloadButton').addEventListener('click', async function(e) {
+    document.getElementById('downloadButton')?.addEventListener('click', async function(e) {
         e.preventDefault();
         const overlay = document.getElementById('downloadOverlay');
         const url = this.href;
@@ -183,31 +200,8 @@
                 return;
             }
 
-            let downloadStarted = false;
-            
-            // Start polling for video processing status
-            const checkDownload = async () => {
-                if (downloadStarted) return;
-
-                try {
-                    const downloadResponse = await fetch(data.download_url);
-                    
-                    if (downloadResponse.ok && downloadResponse.headers.get('content-type') !== 'application/json') {
-                        downloadStarted = true;
-                        overlay.classList.add('hidden');
-                        window.location.href = data.download_url;
-                    } else {
-                        // Keep checking every second
-                        setTimeout(checkDownload, 1000);
-                    }
-                } catch (error) {
-                    console.error('Download error:', error);
-                    alert('An error occurred while downloading the video');
-                    overlay.classList.add('hidden');
-                }
-            };
-
-            checkDownload();
+            // Redirect to loading page with download_id
+            window.location.href = `/loading?download_id=${data.download_id}`;
 
         } catch (error) {
             console.error('Initial request error:', error);
@@ -215,6 +209,18 @@
             overlay.classList.add('hidden');
         }
     });
+    </script>
+    <script>
+    function handleBackNavigation() {
+        // Check user role from session
+        const userRole = "{{ session['role'] }}";
+        
+        if (userRole === "admin") {
+            window.location.href = "/admindashboard";
+        } else {
+            window.location.href = "/dashboard";
+        }
+    }
     </script>
   </body>
 </html>
